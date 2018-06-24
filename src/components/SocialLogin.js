@@ -25,6 +25,11 @@ class SocialLogin extends Component {
   //         .catch(this.onLoginFail.bind(this));
   //     });
   // }
+  componentWillMount() {
+    this.setState({ error: '', loading: true });
+  }
+
+
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -32,7 +37,8 @@ class SocialLogin extends Component {
         console.log(user)
         this.setState({
           name: user.displayName,
-          facebookID: user.uid
+          facebookID: user.uid,
+          loading: false
         })
       }
     })
@@ -86,6 +92,7 @@ class SocialLogin extends Component {
   }
 
   async loginWithFacebook() {
+
     const {type,token} = await Expo.Facebook.logInWithReadPermissionsAsync('1785738094839350', { permissions: ['public_profile'] })
     if(type == 'success') {
       const credential = firebase.auth.FacebookAuthProvider.credential(token)
