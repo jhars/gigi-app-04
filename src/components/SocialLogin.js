@@ -7,7 +7,7 @@ import * as firebase from 'firebase';
 
 class SocialLogin extends Component {
 
-  state = { facebookID: '', error: '', loading: false, name: '' };
+  state = { facebookID: null, error: '', loading: false, name: null };
 
   // onButtonPress() {
   //   const { facebookID } = this.state;
@@ -29,9 +29,10 @@ class SocialLogin extends Component {
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user != null) {
-        console.log(user.displayName)
+        console.log(user)
         this.setState({
-          name: user.displayName
+          name: user.displayName,
+          facebookID: user.uid
         })
       }
     })
@@ -54,16 +55,25 @@ class SocialLogin extends Component {
       return <Spinner size="small" />;
     }
 
+    if (this.state.facebookID) {
+      return (
+        <Text>
+          Welcome, {this.state.name}
+        </Text>
+      );
+    }
+
     return (
-          <Button
-            full
-            rounded
-            primary
-            onPress={() => this.loginWithFacebook()}
-        >
-            <Text style={{ color: 'white' }}> Login with Facebook</Text>
-        </Button>
+      <Button
+        full
+        rounded
+        primary
+        onPress={() => this.loginWithFacebook()}
+      >
+        <Text style={{ color: 'white' }}> Login with Facebook</Text>
+      </Button>
     );
+
   }
 
   renderName() {
@@ -81,8 +91,8 @@ class SocialLogin extends Component {
       const credential = firebase.auth.FacebookAuthProvider.credential(token)
       firebase.auth().signInWithCredential(credential)
         .then( () => {
-          console.log(credential)
-          console.log(this)
+          // console.log(credential)
+          // console.log(this)
         })
         .catch((error) => {
         console.log(error )
@@ -95,9 +105,6 @@ class SocialLogin extends Component {
       <Card>
         <CardSection>
           {this.renderButton()}
-        </CardSection>
-        <CardSection>
-          {this.renderName()}
         </CardSection>
       </Card>
     )
